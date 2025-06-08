@@ -3,9 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import AppBar from '../components/AppBar';
 import { theme } from '../styles/Theme';
-import { mockUsers } from '../data/mockUsers';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/Routes';
+import { getUsers } from '../data/userServices';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -13,15 +13,20 @@ export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  function handleLogin() {
-    const user = mockUsers.find(
-      (u) => u.email === email.trim().toLowerCase() && u.password === password
-    );
+  async function handleLogin() {
+    try {
+      const users = await getUsers();
+      const user = users.find(
+        (u) => u.email === email.trim().toLowerCase() && u.password === password
+      );
 
-    if (user) {
-      navigation.navigate('Welcome', { name: user.name });
-    } else {
-      Alert.alert('Erro', 'Email ou senha inválidos');
+      if (user) {
+        navigation.navigate('Welcome', { name: user.name });
+      } else {
+        Alert.alert('Erro', 'Email ou senha inválidos');
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível acessar os usuários');
     }
   }
 
@@ -59,12 +64,12 @@ export default function LoginScreen({ navigation }: Props) {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.registerText}>
-          Não tem login? <Text style={styles.registerLink}>Cadastre-se aqui</Text>
-        </Text>
-      </TouchableOpacity>
 
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerText}>
+            Não tem login? <Text style={styles.registerLink}>Cadastre-se aqui</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -107,14 +112,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   registerText: {
-  marginTop: theme.spacing.md,
-  color: theme.colors.textLight,
-  fontSize: 14,
-  textAlign: 'center',
-},
-registerLink: {
-  color: theme.colors.secondary, 
-  fontWeight: 'bold',
-},
-
+    marginTop: theme.spacing.md,
+    color: theme.colors.textLight,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  registerLink: {
+    color: theme.colors.secondary,
+    fontWeight: 'bold',
+  },
 });
