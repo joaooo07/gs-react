@@ -1,4 +1,3 @@
-// SensorScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +6,9 @@ import { theme } from '../styles/Theme';
 import { getSensors, SensorListItem } from '../services/sensorService';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/Routes';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 
 type SensorScreenRouteProp = RouteProp<RootStackParamList, 'SensorList'>;
 
@@ -16,19 +18,23 @@ export default function SensorScreen() {
   const route = useRoute<SensorScreenRouteProp>();
   const { farmId } = route.params;
 
-  useEffect(() => {
+ useFocusEffect(
+  React.useCallback(() => {
+    setLoading(true);
     getSensors().then((data) => {
       const filtered = data.filter((sensor) => sensor.farm_id === farmId);
       setSensors(filtered);
       setLoading(false);
     });
-  }, [farmId]);
+  }, [farmId])
+);
+
 
   return (
     <LinearGradient colors={['#0C2D48', '#F05A28']} style={styles.container}>
       <AppBar />
       <View style={styles.content}>
-        <Text style={styles.title}>Sensores da Fazenda 🌾</Text>
+        <Text style={styles.title}>Sensores da Fazenda</Text>
         {loading ? (
           <ActivityIndicator size="large" color="#fff" />
         ) : (

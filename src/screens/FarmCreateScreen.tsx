@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AppBar from '../components/AppBar';
 import { theme } from '../styles/Theme';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { saveFarm } from '../services/farmService';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/Routes';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'FarmCreate'>;
 
 export default function FarmCreateScreen() {
+  const navigation = useNavigation<NavigationProp>();
+
   const [name, setName] = useState('');
   const [street, setStreet] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
@@ -15,9 +23,8 @@ export default function FarmCreateScreen() {
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
 
-  // DropDownPicker
   const [open, setOpen] = useState(false);
-  const [land, setLand] = useState('SMALL');
+  const [land, setLand] = useState<'SMALL' | 'MEDIUM' | 'LARGE' | 'EXTRA_LARGE'>('SMALL');
   const [landOptions, setLandOptions] = useState([
     { label: 'Pequena', value: 'SMALL' },
     { label: 'Média', value: 'MEDIUM' },
@@ -25,22 +32,22 @@ export default function FarmCreateScreen() {
     { label: 'Muito Grande', value: 'EXTRA_LARGE' },
   ]);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!name || !land || !street || !neighborhood || !zipcode || !city || !state) {
       Alert.alert('Erro', 'Preencha todos os campos obrigatórios');
       return;
     }
 
+    const newFarm = {
+      id: Date.now(),
+      name,
+      land,
+      address: { street, neighborhood, city, state, zipcode, number, complement },
+    };
+
+    await saveFarm(newFarm);
     Alert.alert('Fazenda cadastrada com sucesso!');
-    setName('');
-    setLand('SMALL');
-    setStreet('');
-    setNeighborhood('');
-    setZipcode('');
-    setCity('');
-    setState('SP');
-    setNumber('');
-    setComplement('');
+    navigation.navigate('FarmList');
   }
 
   return (

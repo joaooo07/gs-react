@@ -17,4 +17,10 @@ export const mockUsers = [
     email: 'joao@harvestime.com',
     password: '123456',
   },
+    {
+    id: 4,
+    name: 'Rodrigo Silva',
+    email: 'rodrigosilva@gmail.com',
+    password: '123456',
+  },
 ];

@@ -3,36 +3,51 @@ import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView 
 import { LinearGradient } from 'expo-linear-gradient';
 import AppBar from '../components/AppBar';
 import { theme } from '../styles/Theme';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { saveSensor } from '../services/sensorService';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/Routes';
+import { RouteProp } from '@react-navigation/native';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'DeviceCreate'>;
+type RouteProps = RouteProp<RootStackParamList, 'DeviceCreate'>;
 
 export default function DeviceCreateScreen() {
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
+  const { farmId } = route.params;
+
   const [sensorType, setSensorType] = useState('');
   const [description, setDescription] = useState('');
   const [zoneName, setZoneName] = useState('');
   const [deviceType, setDeviceType] = useState('');
   const [deviceStatus, setDeviceStatus] = useState('Ativo');
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!sensorType || !description || !zoneName || !deviceType) {
       Alert.alert('Erro', 'Preencha todos os campos obrigatórios');
       return;
     }
 
-    // Enviar dados para API (em breve)
+    const newSensor = {
+      farm_id: farmId,
+      sensor_id: Date.now(),
+      sensor_type: sensorType,
+      description,
+      zone_name: zoneName,
+      device_type: deviceType,
+      device_status: deviceStatus,
+      last_reading: '---',
+      timestamp: '---',
+    };
+
+    await saveSensor(newSensor);
     Alert.alert('Dispositivo cadastrado com sucesso!');
-    
-    // Resetar campos
-    setSensorType('');
-    setDescription('');
-    setZoneName('');
-    setDeviceType('');
-    setDeviceStatus('Ativo');
+    navigation.navigate('SensorList', { farmId });
   }
 
   return (
-    <LinearGradient
-      colors={['#0C2D48', '#F05A28']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#0C2D48', '#F05A28']} style={styles.container}>
       <AppBar />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Novo Dispositivo</Text>

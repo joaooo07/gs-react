@@ -1,7 +1,7 @@
-// sensorService.ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type SensorListItem = {
-  farm_id: number; // Corrigido de 'any' para 'number'
+  farm_id: number;
   sensor_id: number;
   sensor_type: string;
   description: string;
@@ -12,44 +12,15 @@ export type SensorListItem = {
   timestamp: string;
 };
 
-export const sensoresMock: SensorListItem[] = [
-  {
-    farm_id: 1,
-    sensor_id: 1,
-    sensor_type: 'Temperatura',
-    description: 'Sensor térmico da zona norte',
-    zone_name: 'Norte',
-    device_type: 'A1',
-    device_status: 'ativo',
-    last_reading: '38.6 °C',
-    timestamp: '2024-06-01 14:23',
-  },
-  {
-    farm_id: 1,
-    sensor_id: 2,
-    sensor_type: 'Umidade',
-    description: 'Sensor de solo da zona sul',
-    zone_name: 'Sul',
-    device_type: 'A2',
-    device_status: 'ativo',
-    last_reading: '24%',
-    timestamp: '2024-06-01 14:25',
-  },
-  {
-    farm_id: 1,
-    sensor_id: 3,
-    sensor_type: 'Temperatura',
-    description: 'Sensor de calor da zona oeste',
-    zone_name: 'Oeste',
-    device_type: 'A3',
-    device_status: 'inativo',
-    last_reading: '---',
-    timestamp: '---',
-  },
-];
+const STORAGE_KEY = 'SENSORS';
 
 export async function getSensors(): Promise<SensorListItem[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(sensoresMock), 1000);
-  });
+  const json = await AsyncStorage.getItem(STORAGE_KEY);
+  return json ? JSON.parse(json) : [];
+}
+
+export async function saveSensor(sensor: SensorListItem): Promise<void> {
+  const sensors = await getSensors();
+  sensors.push(sensor);
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(sensors));
 }

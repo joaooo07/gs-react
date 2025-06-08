@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export type Farm = {
   id: number;
   name: string;
@@ -7,36 +9,21 @@ export type Farm = {
     neighborhood: string;
     city: string;
     state: string;
+    zipcode?: string;
+    number?: string;
+    complement?: string;
   };
 };
 
-export const farmsMock: Farm[] = [
-  {
-    id: 1,
-    name: 'Fazenda Boa Esperança',
-    land: 'LARGE',
-    address: {
-      street: 'Estrada da Colheita',
-      neighborhood: 'Zona Rural',
-      city: 'Campinas',
-      state: 'SP',
-    },
-  },
-  {
-    id: 2,
-    name: 'Sítio Flor do Campo',
-    land: 'SMALL',
-    address: {
-      street: 'Rua das Palmeiras',
-      neighborhood: 'Verde Vale',
-      city: 'Ribeirão Preto',
-      state: 'SP',
-    },
-  },
-];
+const STORAGE_KEY = 'FARMS';
 
 export async function getFarms(): Promise<Farm[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(farmsMock), 1000);
-  });
+  const json = await AsyncStorage.getItem(STORAGE_KEY);
+  return json ? JSON.parse(json) : [];
+}
+
+export async function saveFarm(newFarm: Farm): Promise<void> {
+  const farms = await getFarms();
+  farms.push(newFarm);
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(farms));
 }

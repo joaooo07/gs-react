@@ -1,4 +1,3 @@
-// routes.ts
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
@@ -10,6 +9,7 @@ import FarmCreateScreen from '../screens/FarmCreateScreen';
 import FarmListScreen from '../screens/FarmListScreen';
 import FarmDetailScreen from '../screens/FarmDetailsScreen';
 import { Farm } from '../services/farmService';
+import DeviceCreateScreen from '../screens/DeviceCreateScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -36,6 +36,7 @@ export default function Routes() {
       <Stack.Screen name="FarmList" component={FarmListScreen} options={{ title: 'Fazendas' }} />
       <Stack.Screen name="FarmCreate" component={FarmCreateScreen} options={{ title: 'Nova Fazenda' }} />
       <Stack.Screen name="FarmDetail" component={FarmDetailScreen} options={{ title: 'Detalhes da Fazenda' }} />
+      <Stack.Screen name="DeviceCreate" component={DeviceCreateScreen} options={{ title: 'Cadastrar Dispositivo' }}/>
     </Stack.Navigator>
   );
 }

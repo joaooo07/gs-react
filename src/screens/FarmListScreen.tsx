@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AppBar from '../components/AppBar';
 import { theme } from '../styles/Theme';
 import { getFarms, Farm } from '../services/farmService';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/Routes';
 
@@ -22,12 +22,15 @@ export default function FarmListScreen() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation<NavigationProp>();
 
-  useEffect(() => {
-    getFarms().then((data) => {
-      setFarms(data);
-      setLoading(false);
-    });
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      getFarms().then((data) => {
+        setFarms(data);
+        setLoading(false);
+      });
+    }, [])
+  );
 
   return (
     <LinearGradient colors={['#0C2D48', '#F05A28']} style={styles.container}>

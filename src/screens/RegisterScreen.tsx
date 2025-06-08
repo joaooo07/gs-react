@@ -25,7 +25,6 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
 
-    // Aqui futuramente adicionaremos o novo usuário ao mock ou API
     Alert.alert('Sucesso', 'Cadastro realizado!');
     navigation.replace('Login');
   }
